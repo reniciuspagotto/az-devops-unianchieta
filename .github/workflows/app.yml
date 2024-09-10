@@ -71,6 +71,14 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
+      - name: Make Image Public
+        run: |
+          curl -X PATCH \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            -d '{"visibility": "public"}' \
+            "https://api.github.com/user/packages/container/${{ env.IMAGE_NAME }}/versions/${{ github.sha }}/visibility"
+
   deploy:
     name: Azure Web App Deployment
     runs-on: ubuntu-latest
