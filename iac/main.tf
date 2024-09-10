@@ -1,10 +1,10 @@
 resource "azurerm_resource_group" "main" {
-  name     = "AzUnianchieta"
+  name     = var.resource_group_name
   location = "Brazil South"
 }
 
 resource "azurerm_service_plan" "main" {
-  name                = "az-unianchieta-plan"
+  name                = var.service_plan_name
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
   os_type             = "Linux"
@@ -12,7 +12,7 @@ resource "azurerm_service_plan" "main" {
 }
 
 resource "azurerm_linux_web_app" "main" {
-  name                                     = "azunianchieta-appservice"
+  name                                     = var.web_app_name
   location                                 = azurerm_resource_group.main.location
   resource_group_name                      = azurerm_resource_group.main.name
   service_plan_id                          = azurerm_service_plan.main.id

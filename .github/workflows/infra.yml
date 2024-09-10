@@ -1,4 +1,4 @@
-name: "Infra Pipeline | Azure"
+name: "Infra and App Pipeline | Azure"
 
 on:
   workflow_dispatch:
@@ -19,6 +19,9 @@ jobs:
       ARM_CLIENT_ID: 9ecfd250-fb3b-4687-87df-cbb7bcc0b6a1
       ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
 
+    outputs:
+      version: ${{ env.RANDOM_NAME }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -28,11 +31,18 @@ jobs:
         with:
           terraform_version: "1.9.5"
 
+      - name: Generate random name
+        id: generate_name
+        run: | 
+          echo "RANDOM_AZ_RESOURCE_GROUP=az-gruni-$RANDOM" >> $GITHUB_ENV
+          echo "RANDOM_NAME_SERVICE_PLAN=az-plan-$RANDOM" >> $GITHUB_ENV
+          echo "RANDOM_NAME_WEB_APP=az-webapp-$RANDOM" >> $GITHUB_ENV
+
       - name: Terraform Init
         run: terraform init
 
       - name: Terraform Plan
-        run: terraform plan -input=false -out azapp.tfplan
+        run: terraform plan -input=false -out azapp.tfplan -var "resource_group_name=${{ env.RANDOM_AZ_RESOURCE_GROUP }}" -var "service_plan_name=${{ env.RANDOM_NAME_SERVICE_PLAN }}" -var "web_app_name=${{ env.RANDOM_NAME_WEB_APP }}"
 
       - name: Terraform Apply
-        run: terraform apply -auto-approve azapp.tfplan
+        run: terraform apply -auto-approve azapp.tfplan -var "resource_group_name=${{ env.RANDOM_AZ_RESOURCE_GROUP }}" -var "service_plan_name=${{ env.RANDOM_NAME_SERVICE_PLAN }}" -var "web_app_name=${{ env.RANDOM_NAME_WEB_APP }}"
