@@ -62,7 +62,6 @@ jobs:
           images: ${{ env.GH_REGISTRY }}/${{ github.actor }}/${{ env.IMAGE_NAME }}
           tags: |
             type=sha
-            type=latest
 
       - name: Build and Push Image
         uses: docker/build-push-action@v5
