@@ -6,7 +6,7 @@ on:
 
 env:
   AZURE_WEBAPP_NAME: azunianchieta-appservice
-  IMAGE_NAME: "product-service"
+  IMAGE_NAME: product-service
   GH_REGISTRY: ghcr.io
 
 jobs:
@@ -36,7 +36,6 @@ jobs:
     permissions:
       contents: read
       packages: write
-      attestations: write
       id-token: write
 
     outputs:
@@ -51,7 +50,7 @@ jobs:
       - name: Log in to the GitHub Container Registry
         uses: docker/login-action@v3
         with:
-          registry: ${{ env.GH_REGISTRY }}
+          registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
@@ -69,8 +68,6 @@ jobs:
           context: .
           push: true
           tags: ${{ steps.meta.outputs.tags }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
 
   deploy:
     name: Azure Web App Deployment
