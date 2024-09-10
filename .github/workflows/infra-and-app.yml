@@ -47,7 +47,11 @@ jobs:
           echo "RANDOM_NAME_WEB_APP=az-webapp-${{ env.COMPANY_NAME }}-$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 6)" >> $GITHUB_ENV
 
       - name: Terraform Init
-        run: terraform init
+        run: terraform init \
+          -backend-config="resource_group_name=UniAnchietaTF" \
+          -backend-config="storage_account_name=azuniachietatf" \
+          -backend-config="container_name=tfstate" \
+          -backend-config="key=${{ env.COMPANY_NAME }}"
 
       - name: Terraform Plan
         run: terraform plan -input=false -out azapp.tfplan -var "resource_group_name=${{ env.RANDOM_AZ_RESOURCE_GROUP }}" -var "service_plan_name=${{ env.RANDOM_NAME_SERVICE_PLAN }}" -var "web_app_name=${{ env.RANDOM_NAME_WEB_APP }}"
