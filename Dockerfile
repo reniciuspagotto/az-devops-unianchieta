@@ -1,9 +1,9 @@
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
 USER $APP_UID
 WORKDIR /app
-EXPOSE 8080
+EXPOSE 80
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
 COPY "src/" .
 RUN dotnet restore "AzUniAnchieta.App/AzUniAnchieta.App.csproj"

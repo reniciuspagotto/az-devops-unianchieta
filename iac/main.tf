@@ -26,7 +26,6 @@ resource "azurerm_linux_web_app" "main" {
   }
 
   app_settings = {
-    "WEBSITES_PORT"                       = "8080"
     "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = "false"
   }
 }
