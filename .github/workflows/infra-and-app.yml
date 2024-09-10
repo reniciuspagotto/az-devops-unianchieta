@@ -1,4 +1,4 @@
-name: "Infra and App Pipeline | Azure"
+name: "Infra and App | Azure"
 
 on:
   workflow_dispatch:
