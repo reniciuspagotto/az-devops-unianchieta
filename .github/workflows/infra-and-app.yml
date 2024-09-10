@@ -1,0 +1,122 @@
+name: "Infra and App Pipeline | Azure"
+
+on:
+  workflow_dispatch:
+
+env:
+  GH_REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  AZURE_WEBAPP_NAME: azunianchieta-appservice
+  AZ_TENANT_ID: c0457be8-0157-48c2-af49-b621fb3d2c99
+  AZ_SUBSCRIPTION_ID: 563efcd7-bd1e-41de-b5c3-6950a9b7d863
+  AZ_SP_CLIENT_ID: 9ecfd250-fb3b-4687-87df-cbb7bcc0b6a1
+  AZ_SP_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+  ARM_TENANT_ID: c0457be8-0157-48c2-af49-b621fb3d2c99
+  ARM_SUBSCRIPTION_ID: 563efcd7-bd1e-41de-b5c3-6950a9b7d863
+  ARM_CLIENT_ID: 9ecfd250-fb3b-4687-87df-cbb7bcc0b6a1
+  ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+
+jobs:
+  terraform:
+    name: "Terraform"
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./iac
+
+    outputs:
+      version: ${{ env.RANDOM_NAME }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.9.5"
+
+      - name: Generate random name
+        id: generate_name
+        run: | 
+          echo "RANDOM_AZ_RESOURCE_GROUP=az-gruni-$RANDOM" >> $GITHUB_ENV
+          echo "RANDOM_NAME_SERVICE_PLAN=az-plan-$RANDOM" >> $GITHUB_ENV
+          echo "RANDOM_NAME_WEB_APP=az-webapp-$RANDOM" >> $GITHUB_ENV
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Plan
+        run: terraform plan -input=false -out azapp.tfplan -var "resource_group_name=${{ env.RANDOM_AZ_RESOURCE_GROUP }}" -var "service_plan_name=${{ env.RANDOM_NAME_SERVICE_PLAN }}" -var "web_app_name=${{ env.RANDOM_NAME_WEB_APP }}"
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve azapp.tfplan
+
+  build:
+    name: Build | Test
+    runs-on: ubuntu-latest
+    needs: [ terraform ]
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8.x 
+      
+      - name: Dotnet Build
+        run: |
+          dotnet restore
+          dotnet build
+
+      - name: Dotnet Test
+        run: dotnet test
+
+  gh-package:
+    name: Publish | GitHub Registry
+    runs-on: ubuntu-latest
+    needs: [ terraform ]
+    permissions:
+      packages: write
+      contents: read
+      attestations: write
+      id-token: write
+    outputs:
+      version: ${{ steps.meta.outputs.version }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to the GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.GH_REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha
+
+      - name: Build and Push Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Make Image Public
+        run: |
+          curl -X PATCH \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            -d '{"visibility": "public"}' \
+            "https://api.github.com/user/packages/container/${{ env.IMAGE_NAME }}/versions/${{ github.sha }}/visibility"
