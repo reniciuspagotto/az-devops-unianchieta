@@ -7,7 +7,7 @@ on:
 env:
   AZURE_WEBAPP_NAME: azunianchieta-appservice
   IMAGE_NAME: "product-service"
-  GH_REGISTRY: "ghcr.io"
+  GH_REGISTRY: ghcr.io
 
 jobs:
   build:
@@ -33,7 +33,6 @@ jobs:
   gh-package:
     name: Publish | GitHub Registry
     runs-on: ubuntu-latest
-
     permissions:
       contents: read
       packages: write
