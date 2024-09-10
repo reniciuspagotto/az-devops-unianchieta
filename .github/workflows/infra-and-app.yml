@@ -27,7 +27,7 @@ jobs:
         working-directory: ./iac
 
     outputs:
-      version: ${{ env.RANDOM_NAME }}
+      web-app: ${{ env.RANDOM_NAME_WEB_APP }}
 
     steps:
       - name: Checkout
@@ -120,3 +120,20 @@ jobs:
             -H "Accept: application/vnd.github.v3+json" \
             -d '{"visibility": "public"}' \
             "https://api.github.com/user/packages/container/${{ env.IMAGE_NAME }}/versions/${{ github.sha }}/visibility"
+
+  deploy:
+    name: Azure Web App Deployment
+    runs-on: ubuntu-latest
+    needs: [ build, gh-package, terraform ]
+    steps:
+      - name: Login Azure
+        run: |
+          az login --service-principal -u ${{ env.AZ_SP_CLIENT_ID }} -p ${{ env.AZ_SP_CLIENT_SECRET }} --tenant ${{ env.AZ_TENANT_ID }}
+          az account set -s ${{ env.AZ_SUBSCRIPTION_ID }}
+          az account show
+
+      - name: Azure Web Apps Deployment
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ needs.terraform.outputs.web-app }}
+          images: ${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.gh-package.outputs.version }}
