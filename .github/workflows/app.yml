@@ -87,4 +87,4 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
-          images: ${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.gh-package.outputs.version }}
+          images: ${{ env.GH_REGISTRY }}/${{ github.actor }}/${{ env.IMAGE_NAME }}:${{ needs.gh-package.outputs.version }}
