@@ -8,7 +8,12 @@ terraform {
     }
   }
 
-  backend "azurerm" {}
+  backend "azurerm" {
+    resource_group_name  = "UniAnchietaTF"
+    storage_account_name = "azuniachietatf"
+    container_name       = "tfstate"
+    key                  = "infraunianchieta.tfstate"
+  }
 }
 
 provider "azurerm" {
