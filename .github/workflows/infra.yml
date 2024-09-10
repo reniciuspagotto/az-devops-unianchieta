@@ -1,0 +1,74 @@
+name: "Infra Pipeline | Azure"
+
+on:
+  workflow_dispatch:
+
+jobs:
+  terraform:
+    name: "Terraform"
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./iac
+
+    env:
+      BACKEND_STORAGE_RESOURCE_GROUP: UniAnchietaTF
+      BACKEND_STORAGE_ACCOUNT_NAME: azuniachietatf
+      BACKEND_STORAGE_CONTAINER_NAME: tfstate
+      BACKEND_STATE_NAME: azunianchieta.tfstate
+      AZ_TENANT_ID: c0457be8-0157-48c2-af49-b621fb3d2c99
+      AZ_SUBSCRIPTION_ID: 563efcd7-bd1e-41de-b5c3-6950a9b7d863
+      AZ_SP_CLIENT_ID: 9ecfd250-fb3b-4687-87df-cbb7bcc0b6a1
+      AZ_SP_CLIENT_SECRET: Nb28Q~kmcj6oyCj19NWMCcNEmM0UaolrHYeBAdvj
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.9.5"
+
+      # - name: Login Azure
+      #   env:
+      #     AAD_SERVICE_PRINCIPAL_CLIENT_ID: ${{ env.AZ_SP_CLIENT_ID }}
+      #     AAD_SERVICE_PRINCIPAL_CLIENT_SECRET: ${{ env.AZ_SP_CLIENT_SECRET }}
+      #   run: |
+      #     az login --service-principal -u ${{ env.AZ_SP_CLIENT_ID }} -p ${{ env.AZ_SP_CLIENT_SECRET }} --tenant ${{ env.AZ_TENANT_ID }}
+      #     az account set -s ${{ env.AZ_SUBSCRIPTION_ID }}
+      #     az account show
+
+      # - name: Terraform Init
+      #   run: terraform init -upgrade -input=false -backend-config=key="$BACKEND_STATE_NAME" -backend-config=storage_account_name="$BACKEND_STORAGE_ACCOUNT_NAME" -backend-config=container_name="$BACKEND_STORAGE_CONTAINER_NAME" -backend-config=resource_group_name="$BACKEND_STORAGE_RESOURCE_GROUP" -backend-config=subscription_id="${{ secrets.AZ_SUBSCRIPTION_ID }}" -backend-config=tenant_id="${{ env.AZ_TENANT_ID }}" -backend-config=client_id="${{ env.AZ_SP_CLIENT_ID }}" -backend-config=client_secret="${{ secrets.AZ_SP_CLIENT_SECRET }}"
+      #   env:
+      #     BACKEND_STORAGE_RESOURCE_GROUP: ${{ env.BACKEND_STORAGE_RESOURCE_GROUP }}
+      #     BACKEND_STORAGE_ACCOUNT_NAME: ${{ env.BACKEND_STORAGE_ACCOUNT_NAME }}
+      #     BACKEND_STORAGE_CONTAINER_NAME: ${{ env.BACKEND_STORAGE_CONTAINER_NAME }}
+      #     BACKEND_STATE_NAME: ${{ env.BACKEND_STATE_NAME }}
+
+      - name: Login Azure
+        env:
+          AZ_SP_CLIENT_ID: ${{ secrets.AZ_SP_CLIENT_ID }}
+          AZ_SP_CLIENT_SECRET: ${{ secrets.AZ_SP_CLIENT_SECRET }}
+        run: |
+          az login --service-principal -u ${{ env.AZ_SP_CLIENT_ID }} -p ${{ env.AZ_SP_CLIENT_SECRET }} --tenant ${{ env.AZ_TENANT_ID }}
+          az account set -s ${{ secrets.AZ_SUBSCRIPTION_ID }}
+          az account show
+
+      - name: Terraform Init
+        run: terraform init -upgrade -input=false \
+          -backend-config=key="${{ env.BACKEND_STATE_NAME }}" \
+          -backend-config=storage_account_name="${{ env.BACKEND_STORAGE_ACCOUNT_NAME }}" \
+          -backend-config=container_name="${{ env.BACKEND_STORAGE_CONTAINER_NAME }}" \
+          -backend-config=resource_group_name="${{ env.BACKEND_STORAGE_RESOURCE_GROUP }}" \
+          -backend-config=subscription_id="${{ env.AZ_SUBSCRIPTION_ID }}" \
+          -backend-config=tenant_id="${{ env.AZ_TENANT_ID }}"
+
+      - name: Terraform Plan
+        run: terraform plan -input=false -out azapp.tfplan
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve azapp.tfplan

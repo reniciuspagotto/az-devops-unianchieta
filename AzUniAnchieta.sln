@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{E718111E-4385-40E5-8854-DB2FACCA79FF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzUniAnchieta.App", "src\AzUniAnchieta.App\AzUniAnchieta.App.csproj", "{CF6B8865-511E-4376-A5EB-CC96EA33E5EC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{45D4ED80-AA94-40A1-9687-1CF5E40333ED}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzUniAnchieta.Test", "test\AzUniAnchieta.Test\AzUniAnchieta.Test.csproj", "{0F767C31-9094-4864-80CA-75C58EDD7BDA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CF6B8865-511E-4376-A5EB-CC96EA33E5EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF6B8865-511E-4376-A5EB-CC96EA33E5EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF6B8865-511E-4376-A5EB-CC96EA33E5EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF6B8865-511E-4376-A5EB-CC96EA33E5EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F767C31-9094-4864-80CA-75C58EDD7BDA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F767C31-9094-4864-80CA-75C58EDD7BDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F767C31-9094-4864-80CA-75C58EDD7BDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F767C31-9094-4864-80CA-75C58EDD7BDA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{CF6B8865-511E-4376-A5EB-CC96EA33E5EC} = {E718111E-4385-40E5-8854-DB2FACCA79FF}
+		{0F767C31-9094-4864-80CA-75C58EDD7BDA} = {45D4ED80-AA94-40A1-9687-1CF5E40333ED}
+	EndGlobalSection
+EndGlobal
