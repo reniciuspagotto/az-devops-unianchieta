@@ -51,8 +51,8 @@ jobs:
 
       - name: Login Azure
         env:
-          AZ_SP_CLIENT_ID: ${{ secrets.AZ_SP_CLIENT_ID }}
-          AZ_SP_CLIENT_SECRET: ${{ secrets.AZ_SP_CLIENT_SECRET }}
+          AAD_SERVICE_PRINCIPAL_CLIENT_ID: ${{ secrets.AZ_SP_CLIENT_ID }}
+          AAD_SERVICE_PRINCIPAL_CLIENT_SECRET: ${{ secrets.AZ_SP_CLIENT_SECRET }}
         run: |
           az login --service-principal -u ${{ env.AZ_SP_CLIENT_ID }} -p ${{ env.AZ_SP_CLIENT_SECRET }} --tenant ${{ env.AZ_TENANT_ID }}
           az account set -s ${{ secrets.AZ_SUBSCRIPTION_ID }}
