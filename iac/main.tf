@@ -1,18 +1,17 @@
 resource "azurerm_resource_group" "main" {
-  name     = "AzDevOps"
+  name     = "AzUnianchieta"
   location = "Brazil South"
 }
 
 resource "azurerm_container_registry" "main" {
-  name                = "azdevrpf"
+  name                = "azunianchietaregistry"
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
   sku                 = "Standard"
-  admin_enabled       = true
 }
 
 resource "azurerm_service_plan" "main" {
-  name                = "az-devrpf-plan"
+  name                = "az-unianchieta-plan"
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
   os_type             = "Linux"
@@ -35,7 +34,7 @@ resource "azurerm_role_assignment" "main" {
 }
 
 resource "azurerm_linux_web_app" "main" {
-  name                                     = "azapprpc-appservice"
+  name                                     = "azunianchieta-appservice"
   location                                 = azurerm_resource_group.main.location
   resource_group_name                      = azurerm_resource_group.main.name
   service_plan_id                          = azurerm_service_plan.main.id
