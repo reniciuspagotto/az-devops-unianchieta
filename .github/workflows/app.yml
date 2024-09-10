@@ -76,7 +76,7 @@ jobs:
   deploy:
     name: Azure Web App Deployment
     runs-on: ubuntu-latest
-    needs: [ gh-package ]
+    needs: [ build, gh-package ]
     steps:
       - name: Login Azure
         run: |
