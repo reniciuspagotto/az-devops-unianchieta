@@ -4,6 +4,11 @@ name: "App Pipeline | Azure"
 on:
   workflow_dispatch:
 
+env:
+  AZURE_WEBAPP_NAME: azunianchieta-appservice
+  IMAGE_NAME: "product-service"
+  GH_REGISTRY: "ghcr.io"
+
 jobs:
   build:
     name: Build | Test
@@ -75,9 +80,6 @@ jobs:
     needs: [ gh-package ]
     steps:
       - name: Login Azure
-        env:
-          AAD_SERVICE_PRINCIPAL_CLIENT_ID: ${{ secrets.AZ_SP_CLIENT_ID }}
-          AAD_SERVICE_PRINCIPAL_CLIENT_SECRET: ${{ secrets.AZ_SP_CLIENT_SECRET }}
         run: |
           az login --service-principal -u ${{ secrets.AZ_SP_CLIENT_ID }} -p ${{ secrets.AZ_SP_CLIENT_SECRET }} --tenant ${{ secrets.AZ_TENANT_ID }}
           az account set -s ${{ secrets.AZ_SUBSCRIPTION_ID }}
@@ -87,4 +89,4 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
-          images: ${{ env.AZ_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.az-registry.outputs.version }}
+          images: ${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.gh-package.outputs.version }}
