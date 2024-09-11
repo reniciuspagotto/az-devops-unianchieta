@@ -15,7 +15,8 @@ env:
   ARM_SUBSCRIPTION_ID: 563efcd7-bd1e-41de-b5c3-6950a9b7d863
   ARM_CLIENT_ID: 9ecfd250-fb3b-4687-87df-cbb7bcc0b6a1
   ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-  COMPANY_NAME: renicius
+  COMPANY_NAME: matheussilvadesa
+  
 
 jobs:
   terraform:
