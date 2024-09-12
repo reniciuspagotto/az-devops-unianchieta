@@ -20,8 +20,8 @@ resource "azurerm_linux_web_app" "main" {
 
   site_config {
     application_stack {
-      docker_registry_url = "https://ghcr.io"
-      docker_image_name   = "reniciuspagotto/product-service:latest"
+      docker_registry_url = "https://registry.hub.docker.com"
+      docker_image_name   = "nginx:latest"
     }
   }
 

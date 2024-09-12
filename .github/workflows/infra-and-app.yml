@@ -7,13 +7,9 @@ env:
   GH_REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
   AZURE_WEBAPP_NAME: azunianchieta-appservice
-  AZ_TENANT_ID: c0457be8-0157-48c2-af49-b621fb3d2c99
-  AZ_SUBSCRIPTION_ID: 563efcd7-bd1e-41de-b5c3-6950a9b7d863
-  AZ_SP_CLIENT_ID: 9ecfd250-fb3b-4687-87df-cbb7bcc0b6a1
-  AZ_SP_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
   ARM_TENANT_ID: c0457be8-0157-48c2-af49-b621fb3d2c99
   ARM_SUBSCRIPTION_ID: 563efcd7-bd1e-41de-b5c3-6950a9b7d863
-  ARM_CLIENT_ID: 9ecfd250-fb3b-4687-87df-cbb7bcc0b6a1
+  ARM_CLIENT_ID: d89a7078-657a-40ab-8708-1abfbfaf930b
   ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
   COMPANY_NAME: reniciuspagotto
 
@@ -129,8 +125,8 @@ jobs:
     steps:
       - name: Login Azure
         run: |
-          az login --service-principal -u ${{ env.AZ_SP_CLIENT_ID }} -p ${{ env.AZ_SP_CLIENT_SECRET }} --tenant ${{ env.AZ_TENANT_ID }}
-          az account set -s ${{ env.AZ_SUBSCRIPTION_ID }}
+          az login --service-principal -u ${{ env.ARM_CLIENT_ID }} -p ${{ env.ARM_CLIENT_SECRET }} --tenant ${{ env.ARM_TENANT_ID }}
+          az account set -s ${{ env.ARM_SUBSCRIPTION_ID }}
           az account show
 
       - name: Azure Web Apps Deployment
