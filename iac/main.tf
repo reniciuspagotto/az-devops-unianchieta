@@ -20,8 +20,7 @@ resource "azurerm_linux_web_app" "main" {
 
   site_config {
     application_stack {
-      docker_registry_url = "https://registry.hub.docker.com"
-      docker_image_name   = "nginx:latest"
+      docker_registry_url = "https://index.docker.io"
     }
   }
 
